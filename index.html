@@ -1,0 +1,1088 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Our Wrapped</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,400..900&family=Hanken+Grotesk:wght@400;500;600;700&family=Martian+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one phone-shaped story card. Tap through full-bleed colour slides, each built around one big line. */
+:root {
+  --ink: #17111f;
+  --paper: #fff3e8;
+  --plum: #3e1d5f;
+  --tangerine: #ff7236;
+  --sky: #91c3ff;
+  --butter: #ffd948;
+  --pink: #ff5a92;
+  --teal: #0d4c51;
+  --blush: #ffc8d5;
+  --shadow: rgb(0 0 0 / .4);
+  --display: "Anybody", "Arial Narrow", "Helvetica Neue", Arial, sans-serif;
+  --body: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+  --mono: "Martian Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+html { box-sizing: border-box; height: 100%; background: var(--ink); }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  height: 100%; margin: 0; overflow: hidden;
+  display: grid; place-items: center;
+  background: var(--ink); color: var(--paper);
+  font-family: var(--body); font-size: 16px;
+  -webkit-tap-highlight-color: transparent;
+}
+button { font: inherit; color: inherit; }
+button:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
+
+/* ---------- stage ---------- */
+.stage {
+  --sbg: var(--plum); --sfg: var(--butter);
+  position: relative; width: 100%; height: 100%;
+  overflow: hidden; container-type: size;
+  background: var(--sbg); color: var(--sfg);
+  user-select: none; -webkit-user-select: none;
+  touch-action: manipulation; cursor: pointer;
+}
+@media (min-width: 560px) and (min-height: 620px) {
+  .stage {
+    width: auto; height: min(860px, calc(100% - 48px));
+    aspect-ratio: 9 / 17.5; max-width: calc(100% - 32px);
+    border-radius: 28px;
+    box-shadow: 0 30px 90px var(--shadow);
+  }
+}
+
+/* ---------- top bar ---------- */
+.top {
+  position: absolute; z-index: 6; inset: 0 0 auto;
+  padding-top: 12px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 8px; pointer-events: none;
+  transition: opacity .2s ease;
+}
+.stage.held .top { opacity: .35; }
+.bars { display: flex; gap: 3px; }
+.bar { flex: 1; height: 3px; border-radius: 3px; overflow: hidden; background: color-mix(in srgb, var(--sfg) 28%, transparent); }
+.bar i { display: block; height: 100%; background: var(--sfg); transform-origin: left; transform: scaleX(0); }
+.top-row { display: flex; align-items: center; gap: 10px; min-height: 36px; }
+.brand { font-family: var(--mono); font-size: 11px; font-weight: 500; letter-spacing: .1em; text-transform: uppercase; }
+.pause {
+  margin-left: auto; pointer-events: auto; cursor: pointer;
+  width: 36px; height: 36px; display: grid; place-items: center;
+  border: 0; border-radius: 50%;
+  background: color-mix(in srgb, var(--sfg) 16%, transparent);
+}
+.pause svg { width: 14px; height: 14px; fill: currentColor; display: block; }
+
+/* ---------- slides ---------- */
+.slide {
+  position: absolute; inset: 0; z-index: 1; overflow: hidden;
+  background: var(--bg); color: var(--fg);
+  opacity: 0; visibility: hidden;
+  transition: opacity .35s ease, visibility 0s linear .35s;
+}
+.slide.active { z-index: 2; opacity: 1; visibility: visible; transition: opacity .35s ease; }
+.inner {
+  position: relative; z-index: 2; height: 100%;
+  overflow-y: auto; scrollbar-width: none;
+  display: flex; flex-direction: column; justify-content: safe center; gap: 2.2cqh;
+  padding-block: 84px 48px;
+  padding-left: max(24px, env(safe-area-inset-left, 0px));
+  padding-right: max(24px, env(safe-area-inset-right, 0px));
+}
+.inner::-webkit-scrollbar { display: none; }
+.inner > * { margin: 0; min-width: 0; }
+
+/* ---------- type ---------- */
+.label { font-family: var(--mono); font-weight: 500; font-size: max(11px, 2.8cqw); letter-spacing: .09em; text-transform: uppercase; }
+.mega { font-family: var(--display); font-weight: 900; font-stretch: 62%; font-size: min(27cqw, 17cqh); line-height: .84; letter-spacing: -.01em; text-wrap: balance; }
+.h1 { font-family: var(--display); font-weight: 850; font-stretch: 72%; font-size: min(14.5cqw, 8.6cqh); line-height: .9; text-wrap: balance; }
+.h2 { font-family: var(--display); font-weight: 800; font-stretch: 80%; font-size: min(9.4cqw, 5.4cqh); line-height: .98; text-wrap: balance; }
+.big { font-family: var(--display); font-weight: 900; font-stretch: 56%; font-size: min(calc(var(--bs, 36) * 1cqw), 27cqh); line-height: .8; letter-spacing: -.015em; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.lede { font-size: max(17px, 5cqw); line-height: 1.32; font-weight: 600; max-width: 28ch; text-wrap: pretty; }
+.small { font-size: max(14px, 3.8cqw); line-height: 1.45; font-weight: 500; max-width: 34ch; opacity: .85; text-wrap: pretty; }
+.accent { color: var(--ac); }
+
+.slide.active .rise { animation: rise .65s cubic-bezier(.2,.8,.2,1) both; animation-delay: calc(var(--d, 0) * 90ms + 100ms); }
+@keyframes rise { from { opacity: 0; transform: translateY(20px); } }
+
+/* ---------- decorative shapes ---------- */
+.shape { position: absolute; z-index: 1; pointer-events: none; }
+.blob { border-radius: 50%; background: var(--c); }
+.ring { border-radius: 50%; border: 3.2cqw solid var(--c); }
+.pill { border-radius: 999px; background: var(--c); }
+.spark, .buds { color: var(--c); }
+.spark svg, .buds svg { width: 100%; height: 100%; display: block; fill: currentColor; }
+.slide.active .drift { animation: drift 8s ease-in-out infinite alternate; }
+@keyframes drift { to { transform: translate(var(--dx, 10px), var(--dy, -14px)) rotate(var(--rot, 10deg)); } }
+
+/* ---------- slide parts ---------- */
+.hint { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; padding-top: 3cqh; }
+.hint .arrow { display: inline-block; animation: nudge 1.4s ease-in-out infinite; }
+@keyframes nudge { 50% { transform: translateX(5px); } }
+
+.meter { height: 20px; border: 2px solid currentColor; border-radius: 999px; overflow: hidden; }
+.meter i { display: block; height: 100%; width: var(--w); background: var(--fg); }
+.slide.active .meter i { animation: grow 1.2s .4s cubic-bezier(.2,.8,.2,1) both; }
+@keyframes grow { from { width: 0; } }
+
+.rank { list-style: none; padding: 0; display: grid; gap: 1.8cqh; }
+.rank li { display: grid; grid-template-columns: 1.6em minmax(0, 1fr); gap: .55em; align-items: baseline; font-size: max(17px, 5.2cqw); font-weight: 600; line-height: 1.18; }
+.rank li:first-child { font-size: max(20px, 6.4cqw); }
+.rank .n { font-family: var(--display); font-weight: 900; font-stretch: 58%; font-size: 1.8em; line-height: .7; color: var(--ac); font-variant-numeric: tabular-nums; }
+
+.statrow { display: flex; align-items: flex-end; gap: 14px; padding-top: 2.4cqh; border-top: 2px solid currentColor; }
+.statrow .small { padding-bottom: .3em; max-width: 20ch; }
+
+.qmark { font-family: var(--display); font-weight: 900; font-size: min(36cqw, 20cqh); line-height: .6; height: .4em; color: var(--ac); }
+.moment { font-family: var(--display); font-weight: 600; font-stretch: 92%; font-size: min(7.2cqw, 4.3cqh); line-height: 1.16; text-wrap: pretty; }
+
+/* saturday route */
+.route { list-style: none; padding: 0; position: relative; display: grid; gap: 1.6cqh; }
+.route::before { content: ""; position: absolute; left: 9px; top: 12px; bottom: 12px; width: 3px; border-radius: 3px; background: currentColor; transform-origin: top; }
+.slide.active .route::before { animation: line 1.4s .3s cubic-bezier(.4,0,.2,1) both; }
+@keyframes line { from { transform: scaleY(0); } }
+.route li { position: relative; display: grid; grid-template-columns: 21px minmax(0, 1fr); gap: 14px; align-items: start; }
+.route .dot { width: 21px; height: 21px; border-radius: 50%; border: 3px solid currentColor; background: var(--bg); margin-top: 1px; }
+.route li:last-child .dot { background: var(--ac); }
+.route b { display: block; font-family: var(--display); font-weight: 800; font-stretch: 85%; font-size: max(19px, 5.6cqw); line-height: 1.05; }
+.route small { display: block; margin-top: 3px; font-size: max(13px, 3.6cqw); line-height: 1.35; opacity: .85; }
+
+/* humour tier */
+.tiers { display: flex; flex-wrap: wrap; gap: 6px; }
+.tiers span { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; padding: 6px 10px; border-radius: 999px; border: 2px solid currentColor; opacity: .45; text-decoration: line-through; }
+.tiers span.on { opacity: 1; text-decoration: none; background: var(--fg); color: var(--bg); }
+
+/* ticked boxes */
+.checks { list-style: none; padding: 0; display: grid; gap: max(8px, 1.1cqh); }
+.checks li { display: grid; grid-template-columns: 24px minmax(0, 1fr); gap: 11px; align-items: center; font-size: max(15px, 4.5cqw); font-weight: 600; line-height: 1.2; }
+.box { width: 24px; height: 24px; border-radius: 6px; border: 2.5px solid currentColor; background: var(--fg); display: grid; place-items: center; }
+.box svg { width: 16px; height: 16px; fill: none; stroke: var(--bg); stroke-width: 3.2; stroke-linecap: round; stroke-linejoin: round; }
+.box path { stroke-dasharray: 20; stroke-dashoffset: 0; }
+.slide.active .box path { animation: draw .3s both; animation-delay: calc(var(--d, 0) * 200ms + 300ms); }
+@keyframes draw { from { stroke-dashoffset: 20; } }
+
+/* buttons */
+.btn { min-height: 52px; padding: 0 26px; border-radius: 999px; border: 2px solid var(--fg); font-weight: 700; font-size: 17px; cursor: pointer; transition: transform .12s ease; }
+.btn:active { transform: scale(.96); }
+.btn.yes { background: var(--fg); color: var(--bg); }
+.btn.ghost { background: transparent; color: var(--fg); }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; padding-top: 1cqh; }
+.answer { display: grid; gap: 10px; }
+
+/* what I like about you: flip cards */
+.likes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.flip {
+  display: block; min-width: 0; padding: 0; border: 0; border-radius: 18px;
+  background: none; color: inherit; text-align: left; cursor: pointer;
+  perspective: 900px; rotate: var(--tilt, 0deg); transition: rotate .4s ease;
+}
+.flip.wide { grid-column: span 2; }
+.flip.open { rotate: 0deg; cursor: default; }
+.flip-in { display: grid; transform-style: preserve-3d; transition: transform .7s cubic-bezier(.3,1.25,.5,1); }
+.flip.open .flip-in { transform: rotateY(180deg); }
+.face {
+  grid-area: 1 / 1; display: flex; flex-direction: column; justify-content: space-between; gap: 6px;
+  min-height: max(104px, 15cqh); padding: 14px; border-radius: 18px;
+  backface-visibility: hidden; -webkit-backface-visibility: hidden;
+}
+.front {
+  background-color: var(--t); color: var(--tf);
+  background-image: radial-gradient(color-mix(in srgb, var(--tf) 24%, transparent) 1.4px, transparent 1.7px);
+  background-size: 11px 11px;
+}
+.front .q { font-family: var(--display); font-weight: 900; font-stretch: 60%; font-size: max(40px, 11cqw); line-height: .8; }
+.front .tap { font-family: var(--mono); font-size: 9.5px; letter-spacing: .08em; text-transform: uppercase; }
+.back { transform: rotateY(180deg); justify-content: flex-start; background: color-mix(in srgb, var(--t) 24%, var(--paper)); color: var(--ink); }
+.back b { font-family: var(--display); font-weight: 850; font-stretch: 78%; font-size: max(21px, 6cqw); line-height: 1; }
+.back span { font-size: max(13px, 3.5cqw); line-height: 1.35; font-weight: 500; }
+
+/* please judge me: rigged slider */
+.score { display: flex; align-items: baseline; gap: 10px; }
+.score .of { font-family: var(--mono); font-weight: 500; font-size: max(13px, 3.6cqw); }
+.slide.active .score.shake, .slide.active .shake { animation: shake .45s ease both; }
+@keyframes shake { 20% { transform: translateX(-9px); } 40% { transform: translateX(8px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
+.scale { --thumb: 34px; position: relative; display: grid; gap: 6px; }
+.track {
+  position: absolute; top: 13px; height: 18px;
+  left: calc(var(--thumb) / 2); right: calc(var(--thumb) / 2);
+  display: flex; overflow: hidden; border: 2px solid currentColor; border-radius: 999px;
+}
+.track .no { width: calc(var(--cut) * 100%); background: repeating-linear-gradient(-45deg, transparent 0 5px, color-mix(in srgb, var(--fg) 40%, transparent) 5px 8px); }
+.track .ok { flex: 1; background: var(--fg); }
+.scale input {
+  -webkit-appearance: none; appearance: none; position: relative; z-index: 1;
+  width: 100%; height: 44px; margin: 0; background: transparent; cursor: pointer;
+}
+.scale input:disabled { cursor: default; }
+.scale input:focus-visible { outline: none; }
+.scale input::-webkit-slider-runnable-track { height: 44px; background: transparent; border: 0; }
+.scale input::-webkit-slider-thumb {
+  -webkit-appearance: none; width: var(--thumb); height: var(--thumb); margin-top: 5px;
+  border-radius: 50%; background: var(--ac); border: 3px solid var(--fg); box-shadow: 0 4px 12px var(--shadow);
+}
+.scale input::-moz-range-track { height: 44px; background: transparent; border: 0; }
+.scale input::-moz-range-thumb {
+  box-sizing: border-box; width: var(--thumb); height: var(--thumb);
+  border-radius: 50%; background: var(--ac); border: 3px solid var(--fg); box-shadow: 0 4px 12px var(--shadow);
+}
+.scale input:focus-visible::-webkit-slider-thumb { outline: 3px solid var(--fg); outline-offset: 3px; }
+.scale input:focus-visible::-moz-range-thumb { outline: 3px solid var(--fg); outline-offset: 3px; }
+.ticks { position: relative; height: 14px; font-family: var(--mono); font-size: 10px; letter-spacing: .05em; text-transform: uppercase; }
+.ticks span { position: absolute; top: 0; left: calc(var(--thumb) / 2 + (100% - var(--thumb)) * var(--p)); transform: translateX(-50%); white-space: nowrap; }
+.ticks .mid { opacity: .75; }
+.nag { min-height: 1.45em; font-weight: 700; opacity: 1; }
+
+/* tell me what you think of me */
+.known { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 12px 16px; border-radius: 16px; background: var(--fg); color: var(--bg); }
+.known b { font-family: var(--display); font-weight: 850; font-stretch: 80%; font-size: max(22px, 6.4cqw); line-height: 1; }
+.known span { font-family: var(--mono); font-size: 11px; letter-spacing: .06em; text-transform: uppercase; }
+.fields { display: grid; gap: 10px; }
+.field {
+  width: 100%; min-height: 50px; padding: 0 16px;
+  border: 2px solid var(--fg); border-radius: 16px;
+  background: color-mix(in srgb, var(--paper) 45%, transparent); color: var(--fg);
+  font: 600 17px/1.2 var(--body);
+  user-select: text; -webkit-user-select: text; cursor: text;
+}
+.field::placeholder { color: color-mix(in srgb, var(--fg) 55%, transparent); }
+.field:focus-visible { outline: 3px solid var(--fg); outline-offset: 2px; }
+
+/* do you like me */
+.choice { position: relative; display: grid; justify-items: start; gap: 12px; }
+.btn.like-yes { min-height: 60px; font-size: max(18px, 5cqw); transform: scale(var(--grow, 1)); transform-origin: left center; transition: transform .25s ease; }
+.btn.like-no { position: relative; z-index: 3; transform: translate(var(--nx, 0px), var(--ny, 0px)) scale(var(--ns, 1)); transition: transform .28s cubic-bezier(.3,1.4,.5,1); }
+
+/* the date */
+.ask-q, .ask-done { display: grid; gap: 2.4cqh; }
+.mega-yes {
+  width: 100%; min-height: 88px; border: 0; border-radius: 28px; cursor: pointer;
+  background: var(--fg); color: var(--bg);
+  font-family: var(--display); font-weight: 900; font-stretch: 70%; font-size: min(13cqw, 7.5cqh);
+  box-shadow: 0 14px 34px var(--shadow);
+}
+.slide.active .mega-yes { animation: breathe 2.2s ease-in-out infinite; }
+@keyframes breathe { 50% { transform: scale(1.04); } }
+
+.card { background: var(--paper); color: var(--ink); border-radius: 22px; padding: 14px; display: grid; gap: 10px; box-shadow: 0 18px 50px var(--shadow); }
+.card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; padding: 2px 4px; }
+.card-head b { font-family: var(--display); font-weight: 900; font-stretch: 65%; font-size: min(9cqw, 5.4cqh); line-height: 1; }
+.card-head span { font-family: var(--mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; text-align: right; min-width: 0; }
+.tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tile { background: var(--t); color: var(--tf, var(--ink)); border-radius: 14px; padding: 10px 12px; display: grid; gap: 5px; align-content: start; min-width: 0; }
+.tile.wide { grid-column: span 2; }
+.tile small { font-family: var(--mono); font-size: 9.5px; letter-spacing: .07em; text-transform: uppercase; }
+.tile b { font-family: var(--display); font-weight: 900; font-stretch: 60%; font-size: min(9cqw, 5.2cqh); line-height: .95; font-variant-numeric: tabular-nums; overflow-wrap: break-word; }
+.tile.wide b { font-weight: 800; font-stretch: 78%; font-size: min(6.2cqw, 3.7cqh); line-height: 1.05; }
+
+.sr-nav {
+  position: absolute; z-index: 7; bottom: 14px; padding: 8px 14px; border: 0; border-radius: 999px;
+  background: var(--sfg); color: var(--sbg); font-size: 13px; font-weight: 700;
+  opacity: 0; pointer-events: none;
+}
+.sr-nav:focus-visible { opacity: 1; pointer-events: auto; }
+.sr-nav.prev { left: max(16px, env(safe-area-inset-left, 0px)); }
+.sr-nav.next { right: max(16px, env(safe-area-inset-right, 0px)); }
+
+.confetti { position: absolute; inset: 0; z-index: 5; width: 100%; height: 100%; pointer-events: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .slide, .slide.active { transition: none; }
+  .slide.active .rise, .slide.active .drift, .slide.active .meter i, .hint .arrow,
+  .slide.active .shake, .slide.active .mega-yes,
+  .slide.active .route::before, .slide.active .box path { animation: none; }
+  .flip, .flip-in, .btn.like-no, .btn.like-yes { transition: none; }
+}
+</style>
+<style>
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+img { max-width: 100%; }
+[hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<main class="stage" id="stage" aria-label="Our Wrapped story">
+  <div class="top">
+    <div class="bars" id="bars" aria-hidden="true"></div>
+    <div class="top-row">
+      <span class="brand" id="brand">Our Time Wrapped</span>
+      <button class="pause" id="pause" type="button" aria-label="Pause" aria-pressed="false"></button>
+    </div>
+  </div>
+  <div id="deck"></div>
+  <canvas class="confetti" id="confetti" aria-hidden="true"></canvas>
+  <button class="sr-nav prev" id="prev" type="button">Previous slide</button>
+  <button class="sr-nav next" id="next" type="button">Next slide</button>
+</main>
+
+<script>
+/* ============================================================
+   Everything personal lives here.
+   ============================================================ */
+const DATA = {
+  to: "Posh",
+  from: "me",
+  year: 2026,
+
+  started: {
+    title: "The checklist",
+    text: "I thought you were pretty the moment I saw you. Then we worked on the checklist together, and I found out pretty people can have a great sense of humour too.",
+    aside: "Didn't know a checklist could be fun."
+  },
+  earbuds: {
+    title: "Those earbuds",
+    text: "Thank god I bought them.",
+    aside: "Natra kunai convo nai suru hudaina thiyo hola."
+  },
+  opener: {
+    line: "Jadiya.",
+    text: "Thank you for posting your rose khairako wala story. It gave me the perfect excuse to start a conversation."
+  },
+  reels: {
+    count: "999+",
+    text: "You spamming reels was the best part of all.",
+    aside: "Love your sense of humour. Second only to mine."
+  },
+  hits: [
+    "Calling you jadiya",
+    "The checklist that was somehow fun",
+    "Those earbuds",
+    "Your reel spam",
+    "Me turning guffadi"
+  ],
+  genre: "Guff",
+  genreNote: "Didn't know malai eti dherai guff aucha. Talking to you, I became guffadi.",
+  genreStat: "24/7",
+  genreStatNote: "how long I could listen to your guff, whatever it's about.",
+  comedianNote: "You laugh at all my lame jokes. I didn't even know I was that funny.",
+
+  yochi: {
+    name: "Yochi",
+    text: "Thank you for letting me try it. It was so good.",
+    stat: "10/10",
+    statNote: "Would go again. Preferably with you."
+  },
+  saturday: {
+    title: "One of the most fun days I've had in a while",
+    stops: [
+      { name: "Noodles" },
+      { name: "Gelato" },
+      { name: "The city" },
+      { name: "The juggling show", note: "Tyakka got to watch it too." },
+      { name: "Drinks", note: "Never-ending conversations." }
+    ]
+  },
+  humour: {
+    tiers: ["Basic", "Good", "Great", "Elite"],
+    note: "Confirmed at the juggling show. You were laughing at all the jokes."
+  },
+  ragebait: {
+    main: "I like the fact that you ragebait me back instead of getting annoyed.",
+    extra: "I also like how you kept threatening to beat me up.",
+    stat: "100%",
+    statNote: "return rate. Best part of all."
+  },
+  bestLine: {
+    context: "When you missed your train:",
+    quote: "It's okay, gotta wait for goddess to arrive.",
+    reaction: "Uff. Narcissism."
+  },
+
+  moment: "Best part of Saturday? I didn't think about anything else the whole time. I'm sorry you're going through a tough time, and I hope I made you forget your troubles for a while too.",
+  momentAside: "I'm so glad I got to make you smile. And I know I can brighten your mood, no matter what you're feeling.",
+
+  boxes: {
+    intro: "After all our conversations, I started judging you.",
+    title: "Turns out I had a checklist too.",
+    items: [
+      "Values her education",
+      "Family values",
+      "Good morals",
+      "Loves travelling",
+      "Knows what she wants in life",
+      "Elite sense of humour",
+      "Kind. Gum-sharing certified.",
+      "Laughs at my lame jokes",
+      "Never-ending conversations",
+      "Makes me forget everything else"
+    ],
+    outro: "Every box. Ticked."
+  },
+  vibe: "Also, the way we vibe is next level.",
+
+  regret: {
+    text: "Not being able to push myself to drop you till Strathfield, and say everything that was in my heart.",
+    aside: "So this time, I'm saying it."
+  },
+
+  likes: [                      // the five hidden cards
+    { trait: "Pretty", note: "I thought so the moment I saw you." },
+    { trait: "Funny", note: "Found that out on the checklist. Second only to me, obviously." },
+    { trait: "Kind", note: "You shared your gum with everyone." },
+    { trait: "Sweet", note: "It's in the way you present yourself." },
+    { trait: "Strong", note: "That too. You carry yourself like you can handle anything." }
+  ],
+  compatibility: 94,
+  judgeMin: 90,                 // lowest score she's allowed to pick
+
+  knownTrait: "Funny",
+  knownNote: "That I know",
+
+  likeYes: "Yes, of course. Ekdam!",
+  likeNo: "No",
+  likeNags: [                   // what the No button says each time she tries it
+    "Are you sure? Be very honest.",
+    "Wrong answer. Try again.",
+    "Posh, I said honest.",
+    "That button is just for decoration.",
+    "Nice try, jadiya."
+  ],
+
+  dateAsk: "So now tell me, Posh… want to take a chance with me?",
+  dateYes: "Yes"
+};
+
+/* ---------- helpers ---------- */
+const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const fmt = n => Number(n).toLocaleString("en-AU");
+const bs = s => { const l = String(s).length; return l <= 3 ? 40 : l <= 4 ? 34 : l <= 5 ? 28 : 24; };
+const SPARK = '<svg viewBox="0 0 100 100"><path d="M50 0C54 36 64 46 100 50 64 54 54 64 50 100 46 64 36 54 0 50 36 46 46 36 50 0Z"/></svg>';
+const BUDS = '<svg viewBox="0 0 120 120"><g transform="rotate(-18 40 50)"><circle cx="40" cy="34" r="20"/><rect x="33" y="40" width="14" height="54" rx="7"/></g><g transform="rotate(16 84 56)"><circle cx="84" cy="40" r="20"/><rect x="77" y="46" width="14" height="54" rx="7"/></g></svg>';
+const shape = (kind, style) => `<div class="shape ${kind} drift" aria-hidden="true" style="${style}">${kind === "spark" ? SPARK : kind === "buds" ? BUDS : ""}</div>`;
+const count = (n, suffix = "") => `<span data-count="${n}">${fmt(n)}</span>${suffix}`;
+const to = esc(DATA.to), from = esc(DATA.from);
+const sendTo = DATA.from.toLowerCase() === "me" ? "me" : from;
+
+/* ---------- slides ---------- */
+const S = [];
+
+/* where it started */
+S.push({ bg: "tangerine", fg: "ink", ac: "paper", dur: 10000, html: `
+  ${shape("blob", "--c:var(--butter);width:50cqw;height:50cqw;right:-18cqw;top:-12cqw")}
+  ${shape("pill", "--c:var(--pink);width:70cqw;height:16cqw;left:-22cqw;bottom:7cqh;rotate:-18deg;--dx:16px;--dy:-6px")}
+  <div class="inner">
+    <p class="label rise">Where it started</p>
+    <p class="h1 rise" style="--d:1">${esc(DATA.started.title)}</p>
+    <p class="lede rise" style="--d:2">${esc(DATA.started.text)}</p>
+    <p class="small rise" style="--d:3">${esc(DATA.started.aside)}</p>
+  </div>` });
+
+/* the earbuds */
+S.push({ bg: "sky", fg: "ink", ac: "plum", html: `
+  ${shape("buds", "--c:var(--paper);width:36cqw;height:36cqw;right:4cqw;top:12cqh;--rot:-8deg")}
+  ${shape("ring", "--c:var(--pink);width:44cqw;height:44cqw;left:-16cqw;bottom:-12cqw;--dx:10px")}
+  <div class="inner">
+    <p class="label rise">MVP of the year</p>
+    <p class="h1 rise" style="--d:1">${esc(DATA.earbuds.title)}</p>
+    <p class="lede rise" style="--d:2">${esc(DATA.earbuds.text)}</p>
+    <p class="small rise" style="--d:3">${esc(DATA.earbuds.aside)}</p>
+  </div>` });
+
+/* the opening line */
+S.push({ bg: "ink", fg: "paper", ac: "pink", dur: 8000, html: `
+  ${shape("blob", "--c:var(--plum);width:76cqw;height:76cqw;right:-32cqw;bottom:-28cqw")}
+  ${shape("spark", "--c:var(--butter);width:11cqw;height:11cqw;right:10cqw;top:15cqh;--rot:-30deg")}
+  <div class="inner">
+    <p class="label rise">Best opening line</p>
+    <p class="mega accent rise" style="--d:1">“${esc(DATA.opener.line)}”</p>
+    <p class="lede rise" style="--d:2">${esc(DATA.opener.text)}</p>
+  </div>` });
+
+/* reels */
+S.push({ bg: "butter", fg: "ink", ac: "pink", html: `
+  ${shape("ring", "--c:var(--tangerine);width:40cqw;height:40cqw;left:-14cqw;bottom:6cqh;--dy:12px")}
+  ${shape("blob", "--c:var(--pink);width:22cqw;height:22cqw;right:-6cqw;top:16cqh")}
+  <div class="inner">
+    <p class="label rise">Most sent</p>
+    <div class="big rise" style="--d:1;--bs:${bs(DATA.reels.count)}">${esc(DATA.reels.count)}</div>
+    <p class="h2 rise" style="--d:2">reels you spammed me with</p>
+    <p class="lede rise" style="--d:3">${esc(DATA.reels.text)}</p>
+    <p class="small rise" style="--d:4">${esc(DATA.reels.aside)}</p>
+  </div>` });
+
+/* greatest hits */
+S.push({ bg: "pink", fg: "ink", ac: "plum", html: `
+  ${shape("blob", "--c:var(--butter);width:40cqw;height:40cqw;right:-18cqw;bottom:-10cqw")}
+  ${shape("spark", "--c:var(--plum);width:11cqw;height:11cqw;right:10cqw;top:15cqh;--rot:50deg")}
+  <div class="inner">
+    <p class="label rise">Our greatest hits</p>
+    <ol class="rank">
+      ${DATA.hits.slice(0, 5).map((h, i) => `<li class="rise" style="--d:${i + 1}"><span class="n">${i + 1}</span><span>${esc(h)}</span></li>`).join("")}
+    </ol>
+    <p class="small rise" style="--d:6">Ranked by how often I think about them.</p>
+  </div>` });
+
+/* conversation genre */
+S.push({ bg: "teal", fg: "blush", ac: "butter", dur: 9000, html: `
+  ${shape("ring", "--c:var(--tangerine);width:36cqw;height:36cqw;right:-12cqw;top:12cqh")}
+  ${shape("spark", "--c:var(--butter);width:10cqw;height:10cqw;left:10cqw;bottom:8cqh;--rot:-50deg")}
+  <div class="inner">
+    <p class="label rise">Our conversation genre</p>
+    <p class="mega accent rise" style="--d:1">${esc(DATA.genre)}</p>
+    <p class="lede rise" style="--d:2">${esc(DATA.genreNote)}</p>
+    <div class="statrow rise" style="--d:3">
+      <span class="big" style="--bs:22">${esc(DATA.genreStat)}</span>
+      <span class="small">${esc(DATA.genreStatNote)}</span>
+    </div>
+  </div>` });
+
+/* top comedian */
+S.push({ bg: "tangerine", fg: "ink", ac: "paper", html: `
+  ${shape("spark", "--c:var(--butter);width:20cqw;height:20cqw;right:8cqw;top:14cqh;--rot:90deg")}
+  ${shape("blob", "--c:var(--pink);width:56cqw;height:56cqw;left:-26cqw;bottom:-20cqw")}
+  <div class="inner">
+    <p class="label rise">Your top comedian</p>
+    <p class="mega rise" style="--d:1">Me.</p>
+    <p class="lede rise" style="--d:2">${esc(DATA.comedianNote)}</p>
+  </div>` });
+
+/* yochi */
+S.push({ bg: "blush", fg: "plum", ac: "pink", html: `
+  ${shape("blob", "--c:var(--paper);width:46cqw;height:46cqw;right:-16cqw;top:10cqh;--dy:12px")}
+  ${shape("spark", "--c:var(--pink);width:12cqw;height:12cqw;left:8cqw;bottom:9cqh;--rot:45deg")}
+  <div class="inner">
+    <p class="label rise">Best recommendation of the year</p>
+    <p class="mega rise" style="--d:1">${esc(DATA.yochi.name)}</p>
+    <p class="lede rise" style="--d:2">${esc(DATA.yochi.text)}</p>
+    <div class="statrow rise" style="--d:3">
+      <span class="big" style="--bs:22">${esc(DATA.yochi.stat)}</span>
+      <span class="small">${esc(DATA.yochi.statNote)}</span>
+    </div>
+  </div>` });
+
+/* saturday */
+S.push({ bg: "sky", fg: "ink", ac: "pink", dur: 10000, html: `
+  ${shape("ring", "--c:var(--butter);width:40cqw;height:40cqw;right:-16cqw;top:10cqh")}
+  ${shape("blob", "--c:var(--pink);width:30cqw;height:30cqw;right:-10cqw;bottom:-8cqw")}
+  <div class="inner">
+    <p class="label rise">Saturday</p>
+    <p class="h2 rise" style="--d:1">${esc(DATA.saturday.title)}</p>
+    <ol class="route" aria-label="Where we went">
+      ${DATA.saturday.stops.map((st, i) => `<li class="rise" style="--d:${i + 2}"><span class="dot" aria-hidden="true"></span><span><b>${esc(st.name)}</b>${st.note ? `<small>${esc(st.note)}</small>` : ""}</span></li>`).join("")}
+    </ol>
+  </div>` });
+
+/* humour tier */
+S.push({ bg: "pink", fg: "ink", ac: "butter", html: `
+  ${shape("spark", "--c:var(--butter);width:18cqw;height:18cqw;right:8cqw;top:14cqh;--rot:80deg")}
+  ${shape("ring", "--c:var(--plum);width:44cqw;height:44cqw;left:-18cqw;bottom:-10cqw")}
+  <div class="inner">
+    <p class="label rise">Your sense of humour</p>
+    <div class="tiers rise" style="--d:1" aria-hidden="true">
+      ${DATA.humour.tiers.map((t, i, a) => `<span class="${i === a.length - 1 ? "on" : ""}">${esc(t)}</span>`).join("")}
+    </div>
+    <p class="mega rise" style="--d:2">${esc(DATA.humour.tiers[DATA.humour.tiers.length - 1])}.</p>
+    <p class="lede rise" style="--d:3">${esc(DATA.humour.note)}</p>
+  </div>` });
+
+/* ragebait */
+S.push({ bg: "tangerine", fg: "ink", ac: "plum", dur: 9000, html: `
+  ${shape("spark", "--c:var(--butter);width:16cqw;height:16cqw;right:8cqw;top:14cqh;--rot:-70deg")}
+  ${shape("ring", "--c:var(--pink);width:46cqw;height:46cqw;left:-20cqw;bottom:-12cqw")}
+  <div class="inner">
+    <p class="label rise">Ragebait report</p>
+    <p class="h2 rise" style="--d:1">${esc(DATA.ragebait.main)}</p>
+    <p class="lede rise" style="--d:2">${esc(DATA.ragebait.extra)}</p>
+    <div class="statrow rise" style="--d:3">
+      <span class="big" style="--bs:22">${esc(DATA.ragebait.stat)}</span>
+      <span class="small">${esc(DATA.ragebait.statNote)}</span>
+    </div>
+  </div>` });
+
+/* best line */
+S.push({ bg: "teal", fg: "blush", ac: "butter", dur: 8000, html: `
+  ${shape("blob", "--c:var(--pink);width:34cqw;height:34cqw;right:-14cqw;top:11cqh")}
+  ${shape("spark", "--c:var(--butter);width:11cqw;height:11cqw;left:9cqw;bottom:9cqh;--rot:30deg")}
+  <div class="inner">
+    <p class="label rise">Your best line</p>
+    <p class="small rise" style="--d:1">${esc(DATA.bestLine.context)}</p>
+    <p class="h2 rise" style="--d:2">“${esc(DATA.bestLine.quote)}”</p>
+    <p class="h1 accent rise" style="--d:3">${esc(DATA.bestLine.reaction)}</p>
+  </div>` });
+
+/* the part that matters */
+S.push({ bg: "plum", fg: "paper", ac: "pink", dur: 12000, html: `
+  ${shape("ring", "--c:var(--pink);width:52cqw;height:52cqw;right:-24cqw;bottom:-14cqw")}
+  ${shape("spark", "--c:var(--butter);width:11cqw;height:11cqw;right:12cqw;top:15cqh;--rot:35deg")}
+  <div class="inner">
+    <p class="label rise">The part that matters</p>
+    <div class="qmark rise" style="--d:1" aria-hidden="true">“</div>
+    <p class="moment rise" style="--d:2">${esc(DATA.moment)}</p>
+    <p class="small rise" style="--d:3">${esc(DATA.momentAside)}</p>
+  </div>` });
+
+/* what I like about you */
+const LIKE_COLORS = [["tangerine", "ink"], ["sky", "ink"], ["butter", "ink"], ["pink", "ink"], ["teal", "blush"]];
+const likes = DATA.likes.slice(0, 6);
+S.push({ bg: "ink", fg: "paper", ac: "butter", auto: false, html: `
+  ${shape("spark", "--c:var(--pink);width:10cqw;height:10cqw;right:8cqw;top:13cqh;--rot:30deg")}
+  <div class="inner">
+    <p class="label rise">Tap each card to reveal</p>
+    <p class="h2 rise" style="--d:1">What I like about you</p>
+    <div class="likes">
+      ${likes.map((l, i) => {
+        const [t, tf] = LIKE_COLORS[i % LIKE_COLORS.length];
+        const wide = i === likes.length - 1 && likes.length % 2 === 1 ? " wide" : "";
+        return `<button type="button" class="flip rise${wide}" data-act="flip"
+          style="--d:${i + 2};--t:var(--${t});--tf:var(--${tf});--tilt:${i % 2 ? 1.6 : -1.6}deg"
+          aria-label="Hidden card ${i + 1} of ${likes.length}. Tap to reveal."
+          data-label="${esc(l.trait)}: ${esc(l.note)}">
+          <span class="flip-in">
+            <span class="face front" aria-hidden="true"><span class="q">?</span><span class="tap">Tap to reveal</span></span>
+            <span class="face back" aria-hidden="true"><b>${esc(l.trait)}</b><span>${esc(l.note)}</span></span>
+          </span>
+        </button>`;
+      }).join("")}
+    </div>
+    <p class="label rise" style="--d:${likes.length + 2}" aria-live="polite" data-likes-count>0 of ${likes.length} revealed</p>
+  </div>` });
+
+/* ticked every box */
+const TICK = '<svg viewBox="0 0 20 20" aria-hidden="true"><path d="M4 10.5l4 4 8-9"/></svg>';
+S.push({ bg: "butter", fg: "ink", ac: "pink", dur: 12000, html: `
+  ${shape("blob", "--c:var(--pink);width:36cqw;height:36cqw;right:-16cqw;top:10cqh")}
+  ${shape("pill", "--c:var(--tangerine);width:58cqw;height:13cqw;left:-26cqw;bottom:5cqh;rotate:-16deg;--dx:12px")}
+  <div class="inner">
+    <p class="label rise">${esc(DATA.boxes.intro)}</p>
+    <p class="h2 rise" style="--d:1">${esc(DATA.boxes.title)}</p>
+    <ul class="checks">
+      ${DATA.boxes.items.map((it, i) => `<li class="rise" style="--d:${i + 2}"><span class="box" style="--d:${i + 2}">${TICK}</span><span>${esc(it)}</span></li>`).join("")}
+    </ul>
+    <p class="h2 rise" style="--d:${DATA.boxes.items.length + 2}">${esc(DATA.boxes.outro)}</p>
+  </div>` });
+
+/* compatibility */
+S.push({ bg: "tangerine", fg: "ink", ac: "plum", html: `
+  ${shape("blob", "--c:var(--butter);width:44cqw;height:44cqw;left:-16cqw;bottom:-8cqw")}
+  ${shape("ring", "--c:var(--plum);width:30cqw;height:30cqw;right:-8cqw;top:14cqh;--dy:14px")}
+  <div class="inner">
+    <p class="label rise">Compatibility score</p>
+    <div class="big rise" style="--d:1;--bs:${bs(DATA.compatibility + "%")}">${count(DATA.compatibility, "%")}</div>
+    <div class="meter rise" style="--d:2" role="img" aria-label="${DATA.compatibility} out of 100"><i style="--w:${DATA.compatibility}%"></i></div>
+    <p class="small rise" style="--d:3">Method: highly scientific. ${esc(DATA.vibe)}</p>
+  </div>` });
+
+/* please judge me */
+const MIN = Math.max(2, Math.min(100, DATA.judgeMin));
+const CUT = (MIN - 1) / 99;
+S.push({ bg: "pink", fg: "ink", ac: "paper", auto: false, html: `
+  ${shape("ring", "--c:var(--butter);width:38cqw;height:38cqw;right:-14cqw;top:11cqh")}
+  ${shape("blob", "--c:var(--plum);width:30cqw;height:30cqw;left:-13cqw;bottom:5cqh")}
+  <div class="inner">
+    <p class="label rise">Please judge me</p>
+    <p class="h2 rise" style="--d:1">Rate your experience with me so far.</p>
+    <div class="score rise" style="--d:2"><span class="big" style="--bs:34" data-score>${MIN}</span><span class="of">/ 100</span></div>
+    <p class="lede rise" style="--d:3" data-verdict></p>
+    <div class="scale rise" style="--d:4">
+      <div class="track" aria-hidden="true" style="--cut:${CUT}"><span class="no"></span><span class="ok"></span></div>
+      <input type="range" id="judge-range" min="1" max="100" step="1" value="${MIN}" data-range
+        aria-label="Rate your experience with me so far, from 1 to 100">
+      <div class="ticks" aria-hidden="true">
+        <span style="--p:0">1</span>
+        <span class="mid" style="--p:${CUT / 2}">Unavailable</span>
+        <span style="--p:${CUT}">${MIN}</span>
+        <span style="--p:1">100</span>
+      </div>
+    </div>
+    <p class="small nag" data-nag aria-live="polite"></p>
+    <div class="actions rise" style="--d:5"><button class="btn yes" type="button" data-act="lock">Submit rating</button></div>
+    <p class="lede" data-locked hidden></p>
+  </div>` });
+
+/* tell me what you think of me */
+S.push({ bg: "blush", fg: "plum", ac: "pink", auto: false, html: `
+  ${shape("blob", "--c:var(--pink);width:34cqw;height:34cqw;right:-16cqw;top:10cqh")}
+  ${shape("pill", "--c:var(--sky);width:56cqw;height:13cqw;left:-24cqw;bottom:5cqh;rotate:20deg;--dx:12px")}
+  <div class="inner">
+    <p class="label rise">Your turn</p>
+    <p class="h2 rise" style="--d:1">So now, ${to}, tell me what you think of me.</p>
+    <div class="known rise" style="--d:2"><b>${esc(DATA.knownTrait)}</b><span>${esc(DATA.knownNote)}</span></div>
+    <p class="label rise" style="--d:3">What else?</p>
+    <div class="fields rise" style="--d:4">
+      <input class="field" type="text" id="think-1" maxlength="40" autocomplete="off" enterkeyhint="next" placeholder="Type a word or two" aria-label="What else do you think of me?">
+      <input class="field" type="text" id="think-2" maxlength="40" autocomplete="off" enterkeyhint="next" placeholder="And…" aria-label="Something else you think of me">
+      <input class="field" type="text" id="think-3" maxlength="40" autocomplete="off" enterkeyhint="done" placeholder="One more? (optional)" aria-label="One more thing you think of me, optional">
+    </div>
+    <p class="small rise" style="--d:5">Your answers show up on the last page.</p>
+  </div>` });
+
+/* do you like me */
+S.push({ bg: "teal", fg: "blush", ac: "butter", auto: false, html: `
+  ${shape("ring", "--c:var(--pink);width:40cqw;height:40cqw;right:-16cqw;top:11cqh")}
+  ${shape("spark", "--c:var(--butter);width:12cqw;height:12cqw;left:8cqw;bottom:9cqh;--rot:40deg")}
+  <div class="inner">
+    <p class="label rise">Be very honest</p>
+    <p class="h1 rise" style="--d:1">Do you like me?</p>
+    <div class="choice rise" style="--d:2" data-choice>
+      <button class="btn yes like-yes" type="button" data-act="like-yes">${esc(DATA.likeYes)}</button>
+      <button class="btn ghost like-no" type="button" data-act="like-no">${esc(DATA.likeNo)}</button>
+    </div>
+    <p class="small nag" data-like-nag aria-live="polite"></p>
+    <div class="answer" data-like-done hidden>
+      <p class="h2">I knew it.</p>
+      <p class="lede">Okay. One more thing.</p>
+      <p class="hint">Tap to continue <span class="arrow" aria-hidden="true">→</span></p>
+    </div>
+  </div>` });
+
+/* the regret */
+S.push({ bg: "ink", fg: "paper", ac: "pink", dur: 11000, html: `
+  ${shape("ring", "--c:var(--plum);width:56cqw;height:56cqw;right:-26cqw;bottom:-16cqw")}
+  ${shape("spark", "--c:var(--pink);width:10cqw;height:10cqw;right:12cqw;top:15cqh;--rot:25deg")}
+  <div class="inner">
+    <p class="label rise">My biggest regret</p>
+    <div class="qmark rise" style="--d:1" aria-hidden="true">“</div>
+    <p class="moment rise" style="--d:2">${esc(DATA.regret.text)}</p>
+    <p class="h2 accent rise" style="--d:3">${esc(DATA.regret.aside)}</p>
+  </div>` });
+
+/* the date */
+S.push({ bg: "butter", fg: "ink", ac: "pink", auto: false, html: `
+  ${shape("blob", "--c:var(--pink);width:48cqw;height:48cqw;right:-20cqw;bottom:-14cqw")}
+  ${shape("ring", "--c:var(--plum);width:30cqw;height:30cqw;left:-12cqw;top:14cqh;--dx:12px")}
+  ${shape("spark", "--c:var(--tangerine);width:12cqw;height:12cqw;right:14cqw;top:16cqh;--rot:-45deg")}
+  <div class="inner">
+    <div class="ask-q">
+      <p class="label rise">One last question</p>
+      <p class="h1 rise" style="--d:1">${esc(DATA.dateAsk)}</p>
+      <button class="mega-yes rise" style="--d:2" type="button" data-act="date">${esc(DATA.dateYes)}</button>
+    </div>
+    <div class="ask-done" hidden>
+      <p class="h2">You won't regret it.</p>
+      <div class="card">
+        <div class="card-head"><b>Our Time Wrapped</b><span>${to} &amp; ${from}</span></div>
+        <div class="tiles" data-summary></div>
+      </div>
+      <p class="lede">Screenshot this and send it to ${sendTo}.</p>
+    </div>
+  </div>` });
+
+/* intro goes first, now that the slide count is known */
+S.unshift({ bg: "plum", fg: "butter", ac: "pink", auto: false, html: `
+  ${shape("blob", "--c:var(--pink);width:62cqw;height:62cqw;left:-22cqw;bottom:-20cqw;--dx:14px;--dy:-10px")}
+  ${shape("ring", "--c:var(--tangerine);width:44cqw;height:44cqw;right:-16cqw;top:11cqh;--dx:-12px;--dy:16px")}
+  ${shape("spark", "--c:var(--sky);width:12cqw;height:12cqw;right:14cqw;bottom:20cqh;--rot:40deg")}
+  <div class="inner">
+    <p class="label">Our Time Wrapped</p>
+    <h1 class="mega">Hey ${to}.</h1>
+    <p class="lede">I made you something. I put my whole heart into it.</p>
+    <p class="hint">Tap to start <span class="arrow" aria-hidden="true">→</span></p>
+  </div>` });
+
+/* ---------- render ---------- */
+const stage = document.getElementById("stage");
+const deck = document.getElementById("deck");
+const barsEl = document.getElementById("bars");
+const pauseBtn = document.getElementById("pause");
+document.getElementById("brand").textContent = "Our Time Wrapped";
+
+deck.innerHTML = S.map((s, i) =>
+  `<section class="slide" style="--bg:var(--${s.bg});--fg:var(--${s.fg});--ac:var(--${s.ac})" role="group" aria-roledescription="slide" aria-label="${i + 1} of ${S.length}">${s.html}</section>`
+).join("");
+barsEl.innerHTML = S.map(() => '<span class="bar"><i></i></span>').join("");
+const slides = [...deck.children];
+const fills = [...barsEl.querySelectorAll("i")];
+
+const PAUSE_ICON = '<svg viewBox="0 0 14 14" aria-hidden="true"><rect x="2" y="1" width="3.5" height="12" rx="1"/><rect x="8.5" y="1" width="3.5" height="12" rx="1"/></svg>';
+const PLAY_ICON = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11a.6.6 0 0 0 .9.5l9-5.5a.6.6 0 0 0 0-1l-9-5.5a.6.6 0 0 0-.9.5z"/></svg>';
+pauseBtn.innerHTML = PAUSE_ICON;
+if (REDUCED) pauseBtn.hidden = true;
+
+/* ---------- navigation ---------- */
+let idx = 0, elapsed = 0, last = performance.now(), held = false, userPaused = false;
+const durOf = i => S[i].dur || 7000;
+const autoOf = i => !REDUCED && S[i].auto !== false;
+
+function countUp(root) {
+  root.querySelectorAll("[data-count]").forEach(el => {
+    const target = Number(el.dataset.count);
+    if (REDUCED) { el.textContent = fmt(target); return; }
+    const t0 = performance.now(), d = 1100;
+    el.textContent = "0";
+    const step = now => {
+      const p = Math.min((now - t0) / d, 1);
+      if (p < 1 && root.classList.contains("active")) {
+        el.textContent = fmt(Math.round(target * (1 - Math.pow(1 - p, 3))));
+        requestAnimationFrame(step);
+      } else {
+        el.textContent = fmt(target);
+      }
+    };
+    requestAnimationFrame(step);
+  });
+}
+
+function show(n) {
+  slides.forEach((s, i) => {
+    const on = i === n;
+    s.classList.toggle("active", on);
+    s.inert = !on;
+    if (on) s.removeAttribute("aria-hidden"); else s.setAttribute("aria-hidden", "true");
+  });
+  stage.style.setProperty("--sbg", `var(--${S[n].bg})`);
+  stage.style.setProperty("--sfg", `var(--${S[n].fg})`);
+  fills.forEach((f, i) => { f.style.transform = `scaleX(${i < n ? 1 : 0})`; });
+}
+
+function go(n) {
+  n = Math.max(0, Math.min(S.length - 1, n));
+  if (n === idx) return;
+  if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+  idx = n; elapsed = 0;
+  show(idx);
+  countUp(slides[idx]);
+}
+
+show(0);
+
+function tick(now) {
+  const dt = Math.min(now - last, 100); last = now;
+  if (autoOf(idx)) {
+    if (!(held || userPaused || document.hidden)) elapsed += dt;
+    const p = Math.min(elapsed / durOf(idx), 1);
+    fills[idx].style.transform = `scaleX(${p})`;
+    if (p >= 1 && idx < S.length - 1) go(idx + 1);
+  } else {
+    fills[idx].style.transform = "scaleX(1)";
+  }
+  requestAnimationFrame(tick);
+}
+requestAnimationFrame(tick);
+
+/* tap left third = back, elsewhere = next, press and hold = pause */
+let down = null, holdT = 0;
+stage.addEventListener("pointerdown", e => {
+  if (e.button > 0 || e.target.closest("button, input, .scale")) return;
+  down = { x: e.clientX, y: e.clientY, moved: false };
+  clearTimeout(holdT);
+  holdT = setTimeout(() => { if (down) { held = true; stage.classList.add("held"); } }, 230);
+});
+stage.addEventListener("pointermove", e => {
+  if (down && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 12) down.moved = true;
+});
+function endPress(cancel) {
+  clearTimeout(holdT);
+  if (!down) return;
+  const wasHeld = held, d = down;
+  held = false; down = null; stage.classList.remove("held");
+  if (cancel || wasHeld || d.moved) return;
+  const r = stage.getBoundingClientRect();
+  if (d.x - r.left < r.width * 0.3) go(idx - 1); else go(idx + 1);
+}
+stage.addEventListener("pointerup", () => endPress(false));
+stage.addEventListener("pointercancel", () => endPress(true));
+stage.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") endPress(true); });
+stage.addEventListener("contextmenu", e => { if (!e.target.closest("input")) e.preventDefault(); });
+
+document.getElementById("prev").addEventListener("click", () => go(idx - 1));
+document.getElementById("next").addEventListener("click", () => go(idx + 1));
+document.addEventListener("keydown", e => {
+  if (e.target.closest && e.target.closest("button, input")) return;
+  if (e.key === "ArrowRight" || e.key === " ") { e.preventDefault(); go(idx + 1); }
+  else if (e.key === "ArrowLeft") { e.preventDefault(); go(idx - 1); }
+});
+
+pauseBtn.addEventListener("click", () => {
+  userPaused = !userPaused;
+  pauseBtn.setAttribute("aria-pressed", String(userPaused));
+  pauseBtn.setAttribute("aria-label", userPaused ? "Play" : "Pause");
+  pauseBtn.innerHTML = userPaused ? PLAY_ICON : PAUSE_ICON;
+});
+
+/* ---------- interactive pages ---------- */
+let likeAnswer = "";
+
+const verdict = v =>
+  v === 100 ? "Correct answer." :
+  v >= 97 ? "Now we're talking." :
+  v >= 94 ? "Respectable. Very respectable." :
+  "Acceptable. I'll allow it.";
+const JUDGE_NAGS = [
+  "Nice try. That part of the scale is broken.",
+  "Error 404: lower score not found.",
+  `Sorry, 1 to ${MIN - 1} isn't available in your region.`,
+  `The minimum is ${MIN}. I don't make the rules. Actually, I do.`,
+  `You can keep trying. It's still ${MIN}.`
+];
+let judgeNagI = 0, lastJudgeNag = 0;
+function shake(el) { el.classList.remove("shake"); void el.offsetWidth; el.classList.add("shake"); }
+function judgeNag(s) {
+  const now = performance.now();
+  if (now - lastJudgeNag < 900) return;
+  lastJudgeNag = now;
+  s.querySelector("[data-nag]").textContent = JUDGE_NAGS[judgeNagI++ % JUDGE_NAGS.length];
+  shake(s.querySelector(".score"));
+}
+deck.querySelectorAll("[data-verdict]").forEach(el => { el.textContent = verdict(MIN); });
+deck.addEventListener("input", e => {
+  const r = e.target.closest("[data-range]");
+  if (!r) return;
+  const s = r.closest(".slide");
+  let v = Number(r.value);
+  if (v < MIN) { v = MIN; r.value = MIN; judgeNag(s); }
+  s.querySelector("[data-score]").textContent = v;
+  s.querySelector("[data-verdict]").textContent = verdict(v);
+});
+
+/* Enter in a text field moves to the next one */
+deck.addEventListener("keydown", e => {
+  if (e.key !== "Enter" || !e.target.classList.contains("field")) return;
+  e.preventDefault();
+  const fields = [...e.target.closest(".slide").querySelectorAll(".field")];
+  const next = fields[fields.indexOf(e.target) + 1];
+  if (next) next.focus(); else e.target.blur();
+});
+
+/* the No button that won't be pressed */
+let noTries = 0, lastDodge = 0;
+function dodge(btn) {
+  if (btn.dataset.converted) return;
+  const now = performance.now();
+  if (now - lastDodge < 250) return;
+  lastDodge = now;
+  const s = btn.closest(".slide");
+  const nagEl = s.querySelector("[data-like-nag]");
+  const yesBtn = s.querySelector(".like-yes");
+  noTries++;
+  if (noTries > DATA.likeNags.length) {
+    btn.dataset.converted = "1";
+    btn.textContent = "Okay fine, yes";
+    btn.style.setProperty("--nx", "0px");
+    btn.style.setProperty("--ny", "0px");
+    btn.style.setProperty("--ns", "1");
+    nagEl.textContent = "See? Even the No button agrees.";
+    return;
+  }
+  nagEl.textContent = DATA.likeNags[noTries - 1];
+  if (REDUCED) return;
+  const inner = s.querySelector(".inner").getBoundingClientRect();
+  const r = btn.getBoundingClientRect();
+  const curX = parseFloat(btn.style.getPropertyValue("--nx")) || 0;
+  const curY = parseFloat(btn.style.getPropertyValue("--ny")) || 0;
+  const baseL = r.left - curX, baseT = r.top - curY, pad = 16;
+  const minX = inner.left + pad - baseL, maxX = inner.right - pad - r.width - baseL;
+  const minY = Math.max(-70, inner.top + 90 - baseT), maxY = Math.min(150, inner.bottom - pad - r.height - baseT);
+  let x = curX, y = curY;
+  for (let k = 0; k < 12 && Math.hypot(x - curX, y - curY) < 70; k++) {
+    x = minX + Math.random() * Math.max(0, maxX - minX);
+    y = minY + Math.random() * Math.max(0, maxY - minY);
+  }
+  btn.style.setProperty("--nx", `${Math.round(x)}px`);
+  btn.style.setProperty("--ny", `${Math.round(y)}px`);
+  btn.style.setProperty("--ns", String(Math.max(0.6, 1 - noTries * 0.08)));
+  yesBtn.style.setProperty("--grow", String(Math.min(1.25, 1 + noTries * 0.05)));
+}
+deck.addEventListener("pointerdown", e => {
+  const b = e.target.closest(".like-no");
+  if (b && !b.dataset.converted) { e.preventDefault(); dodge(b); }
+});
+deck.addEventListener("pointerover", e => {
+  const b = e.target.closest(".like-no");
+  if (b && e.pointerType === "mouse") dodge(b);
+});
+function answerLike(text) {
+  likeAnswer = text;
+  const s = slides[idx];
+  s.querySelector("[data-choice]").hidden = true;
+  s.querySelector("[data-like-nag]").textContent = "";
+  s.querySelector("[data-like-done]").hidden = false;
+}
+
+/* summary card on the last page */
+function listOf(items) {
+  try { return new Intl.ListFormat("en", { style: "long", type: "conjunction" }).format(items); }
+  catch { return items.join(", "); }
+}
+function updateSummary() {
+  const r = deck.querySelector("[data-range]");
+  const rating = r ? `${r.value}/100` : `${MIN}+`;
+  const extras = [...deck.querySelectorAll(".field")].map(f => f.value.trim()).filter(Boolean);
+  const traits = listOf([DATA.knownTrait, ...extras]);
+  deck.querySelector("[data-summary]").innerHTML = `
+    <div class="tile" style="--t:var(--tangerine)"><small>Your rating</small><b>${esc(rating)}</b></div>
+    <div class="tile" style="--t:var(--pink)"><small>Do you like me?</small><b>${esc(likeAnswer || "Skipped")}</b></div>
+    <div class="tile" style="--t:var(--sky)"><small>Compatibility</small><b>${DATA.compatibility}%</b></div>
+    <div class="tile" style="--t:var(--butter)"><small>Reels sent</small><b>${esc(DATA.reels.count)}</b></div>
+    <div class="tile wide" style="--t:var(--blush)"><small>You think I'm</small><b>${esc(traits)}</b></div>
+    <div class="tile wide" style="--t:var(--plum);--tf:var(--paper)"><small>Taking a chance on me?</small><b>Yes.</b></div>`;
+}
+
+deck.addEventListener("click", e => {
+  const b = e.target.closest("[data-act]");
+  if (!b) return;
+  const s = slides[idx];
+  const act = b.dataset.act;
+
+  if (act === "flip") {
+    if (b.classList.contains("open")) return;
+    b.classList.add("open");
+    b.setAttribute("aria-label", b.dataset.label);
+    const total = s.querySelectorAll(".flip").length;
+    const open = s.querySelectorAll(".flip.open").length;
+    s.querySelector("[data-likes-count]").textContent =
+      open === total ? `All ${total} revealed. That's the short list.` : `${open} of ${total} revealed`;
+  } else if (act === "lock") {
+    const r = s.querySelector("[data-range]");
+    const v = Number(r.value);
+    r.disabled = true;
+    s.querySelector(".actions").hidden = true;
+    s.querySelector("[data-nag]").textContent = "";
+    const out = s.querySelector("[data-locked]");
+    out.textContent = `Locked in at ${v}/100. The judges' decision is final.`;
+    out.hidden = false;
+    if (v === 100) burst();
+  } else if (act === "like-yes") {
+    answerLike("Ekdam");
+  } else if (act === "like-no") {
+    if (b.dataset.converted) answerLike("Yes, eventually");
+    else if (e.detail === 0) dodge(b);
+  } else if (act === "date") {
+    updateSummary();
+    s.querySelector(".ask-q").hidden = true;
+    s.querySelector(".ask-done").hidden = false;
+    burst();
+  }
+});
+
+/* ---------- confetti ---------- */
+const cv = document.getElementById("confetti");
+const cx = cv.getContext("2d");
+const css = getComputedStyle(document.documentElement);
+const COLORS = ["--pink", "--tangerine", "--sky", "--plum", "--paper", "--teal"].map(v => css.getPropertyValue(v).trim());
+let raf = 0;
+function burst() {
+  if (REDUCED || !cx) return;
+  const r = stage.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width = r.width * dpr; cv.height = r.height * dpr;
+  cx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  const parts = Array.from({ length: 170 }, () => ({
+    x: r.width * (0.3 + Math.random() * 0.4), y: r.height * 0.62,
+    vx: (Math.random() - 0.5) * 13, vy: -(Math.random() * 13 + 7),
+    w: 6 + Math.random() * 6, h: 8 + Math.random() * 10,
+    rot: Math.random() * 6, vr: (Math.random() - 0.5) * 0.4,
+    c: COLORS[(Math.random() * COLORS.length) | 0]
+  }));
+  cancelAnimationFrame(raf);
+  const t0 = performance.now();
+  const step = now => {
+    cx.clearRect(0, 0, r.width, r.height);
+    for (const p of parts) {
+      p.vy += 0.34; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      cx.save(); cx.translate(p.x, p.y); cx.rotate(p.rot);
+      cx.fillStyle = p.c; cx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      cx.restore();
+    }
+    if (now - t0 < 3400) raf = requestAnimationFrame(step);
+    else cx.clearRect(0, 0, r.width, r.height);
+  };
+  raf = requestAnimationFrame(step);
+}
+</script>
+</body>
+</html>
