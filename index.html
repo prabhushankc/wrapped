@@ -166,6 +166,24 @@ button:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
 .slide.active .box path { animation: draw .3s both; animation-delay: calc(var(--d, 0) * 200ms + 300ms); }
 @keyframes draw { from { stroke-dashoffset: 20; } }
 
+/* sunset */
+.scene { position: absolute; inset: 0; z-index: 0; pointer-events: none; }
+.sky { position: absolute; inset: 0 0 30%; background: linear-gradient(to bottom, var(--plum) 0%, color-mix(in srgb, var(--plum) 45%, var(--pink)) 40%, var(--pink) 68%, var(--tangerine) 100%); overflow: hidden; }
+.sun {
+  position: absolute; left: 50%; bottom: 0; width: min(64cqw, 44cqh); aspect-ratio: 1; border-radius: 50%;
+  translate: -50% 50%;
+  background: linear-gradient(to bottom, var(--butter) 10%, color-mix(in srgb, var(--butter) 55%, var(--tangerine)) 50%);
+  -webkit-mask-image: linear-gradient(to bottom, #000 0 27%, transparent 27% 30%, #000 30% 36%, transparent 36% 40%, #000 40% 44%, transparent 44% 49%, #000 49%);
+  mask-image: linear-gradient(to bottom, #000 0 27%, transparent 27% 30%, #000 30% 36%, transparent 36% 40%, #000 40% 44%, transparent 44% 49%, #000 49%);
+}
+.slide.active .sun { animation: sink 10s cubic-bezier(.25,0,.3,1) both; }
+@keyframes sink { from { translate: -50% 16%; } }
+.sea { position: absolute; inset: 70% 0 0; background: linear-gradient(to bottom, color-mix(in srgb, var(--plum) 75%, var(--ink)), var(--ink)); overflow: hidden; }
+.glint { position: absolute; left: 50%; height: 5px; border-radius: 5px; translate: -50% 0; width: var(--w); top: var(--t); background: var(--butter); opacity: var(--o); }
+.slide.active .glint { animation: shimmer 2.6s ease-in-out infinite alternate; animation-delay: calc(var(--i) * -0.7s); }
+@keyframes shimmer { to { transform: scaleX(.72); opacity: calc(var(--o) * .6); } }
+.sunset-copy { justify-content: flex-start; padding-top: max(100px, 15cqh); }
+
 /* buttons */
 .btn { min-height: 52px; padding: 0 26px; border-radius: 999px; border: 2px solid var(--fg); font-weight: 700; font-size: 17px; cursor: pointer; transition: transform .12s ease; }
 .btn:active { transform: scale(.96); }
@@ -294,7 +312,8 @@ button:focus-visible { outline: 3px solid currentColor; outline-offset: 3px; }
   .slide, .slide.active { transition: none; }
   .slide.active .rise, .slide.active .drift, .slide.active .meter i, .hint .arrow,
   .slide.active .shake, .slide.active .mega-yes,
-  .slide.active .route::before, .slide.active .box path { animation: none; }
+  .slide.active .route::before, .slide.active .box path,
+  .slide.active .sun, .slide.active .glint { animation: none; }
   .flip, .flip-in, .btn.like-no, .btn.like-yes { transition: none; }
 }
 </style>
@@ -397,7 +416,7 @@ const DATA = {
 
   boxes: {
     intro: "After all our conversations, I started judging you.",
-    title: "Turns out I had a checklist too.",
+    title: "I told you what kind of person I like and am looking for.",
     items: [
       "Values her education",
       "Family values",
@@ -410,13 +429,17 @@ const DATA = {
       "Never-ending conversations",
       "Makes me forget everything else"
     ],
-    outro: "Every box. Ticked."
+    outro: "And you ticked all the boxes."
   },
   vibe: "Also, the way we vibe is next level.",
 
   regret: {
     text: "Not being able to push myself to drop you till Strathfield, and say everything that was in my heart.",
     aside: "So this time, I'm saying it."
+  },
+  sunset: {
+    setup: "You said you like sunsets.",
+    wish: "I wish we could watch the sunset together."
   },
 
   likes: [                      // the five hidden cards
@@ -739,6 +762,22 @@ S.push({ bg: "ink", fg: "paper", ac: "pink", dur: 11000, html: `
     <div class="qmark rise" style="--d:1" aria-hidden="true">“</div>
     <p class="moment rise" style="--d:2">${esc(DATA.regret.text)}</p>
     <p class="h2 accent rise" style="--d:3">${esc(DATA.regret.aside)}</p>
+  </div>` });
+
+/* sunset */
+const GLINTS = [[54, 10, .9], [40, 26, .75], [30, 42, .6], [20, 58, .45], [12, 74, .3]];
+S.push({ bg: "plum", fg: "paper", ac: "butter", dur: 10000, html: `
+  <div class="scene" aria-hidden="true">
+    <div class="sky"><div class="sun"></div></div>
+    <div class="sea">
+      ${GLINTS.map(([w, t, o], i) => `<span class="glint" style="--w:${w}cqw;--t:${t}%;--o:${o};--i:${i}"></span>`).join("")}
+    </div>
+  </div>
+  ${shape("spark", "--c:var(--butter);width:6cqw;height:6cqw;right:12cqw;top:13cqh;--rot:40deg")}
+  ${shape("spark", "--c:var(--blush);width:4cqw;height:4cqw;right:6cqw;top:50cqh;--rot:-30deg")}
+  <div class="inner sunset-copy">
+    <p class="lede rise">${esc(DATA.sunset.setup)}</p>
+    <p class="h1 rise" style="--d:1">${esc(DATA.sunset.wish)}</p>
   </div>` });
 
 /* the date */
