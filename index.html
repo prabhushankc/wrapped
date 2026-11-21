@@ -135,6 +135,22 @@ body.has-music [data-if-nomusic], body:not(.has-music) [data-if-music] { display
 .meter i { display: block; height: 100%; width: var(--w); background: var(--fg); }
 .slide.active .meter i { animation: grow 1.2s .4s cubic-bezier(.2,.8,.2,1) both; }
 .memrow { display: grid; gap: 8px; }
+/* upcoming duet: a track card */
+.tcard {
+  display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px 14px; align-items: center;
+  padding: 12px; border-radius: 18px; background: var(--paper); color: var(--ink);
+  box-shadow: 0 16px 40px var(--shadow);
+}
+.cover { width: 64px; height: 64px; border-radius: 12px; display: grid; place-items: center; color: var(--paper); background: linear-gradient(135deg, var(--pink), var(--tangerine)); }
+.cover svg { width: 30px; height: 30px; fill: currentColor; }
+.track-meta { display: grid; gap: 4px; min-width: 0; }
+.track-meta b { font-family: var(--display); font-weight: 850; font-stretch: 80%; font-size: max(20px, 5.6cqw); line-height: 1; }
+.track-meta small { font-family: var(--mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; opacity: .75; }
+.pbar { grid-column: 1 / -1; display: grid; gap: 6px; }
+.pbar .line { position: relative; height: 4px; border-radius: 4px; background: color-mix(in srgb, var(--ink) 15%, transparent); }
+.pbar .line::after { content: ""; position: absolute; left: 4%; top: 50%; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--ink); }
+.slide.active .pbar .line::after { animation: beat 1.6s ease-in-out infinite; }
+.pbar .times { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; letter-spacing: .06em; text-transform: uppercase; opacity: .7; }
 .mem { list-style: none; margin: 0; padding: 0; display: grid; gap: max(8px, 1.2cqh); }
 .mem li { display: grid; grid-template-columns: 12px minmax(0, 1fr); gap: 12px; align-items: baseline; font-size: max(16px, 4.6cqw); font-weight: 600; line-height: 1.25; }
 .mem li::before { content: ""; width: 11px; height: 11px; border-radius: 3px; background: var(--ac); }
@@ -488,7 +504,7 @@ a.btn:focus-visible { outline: 3px solid var(--fg); outline-offset: 3px; }
   .slide.active .sun, .slide.active .glint,
   .slide.active .swing i::after, .slide.active .sketch .ln, .slide.active .sketch .fl, .slide.active .sketch .pk, .slide.active .sketch .tongue, .slide.active .bars5 i, .slide.active .record,
   .slide.active .grain, .slide.active .leak, .slide.active .playover .disc,
-  .slide.active .clock .mh, .slide.active .clock .hh { animation: none; }
+  .slide.active .clock .mh, .slide.active .clock .hh, .slide.active .pbar .line::after { animation: none; }
   .watch-bar i, .subtitle { transition: none; }
   .flip, .flip-in, .btn.like-no, .btn.like-yes, .mega-yes, .date-no { transition: none; }
 }
@@ -588,7 +604,8 @@ const DATA = {
     reaction: "Uff. Narcissism."
   },
   film: {
-    src: "moment.mp4",          // upload these two files next to index.html
+    src: "moment.mp4",          // upload all three video files next to index.html
+    srcHdr: "moment-hdr.mp4",   // original colours, used on phones that support it
     poster: "moment.jpg",
     label: "The moment I knew",
     title: "This is when I knew I was done for.",
@@ -682,6 +699,15 @@ const DATA = {
     more: "+ more",
     meterLabel: "Memory used on you",
     care: "That's how much I care about you."
+  },
+  duet: {
+    label: "Upcoming release",
+    remember: "I remember you saying you used to sing when you were young.",
+    title: "Someday, I'll play the guitar and you'll sing along.",
+    track: "Our First Duet",
+    credits: "Posh on vocals · me on guitar",
+    release: "Someday",
+    cheese: "Off-key is allowed. I'll be too busy smiling to notice."
   },
   early: {
     label: "Timing",
@@ -880,7 +906,7 @@ S.push({ bg: "plum", fg: "paper", ac: "butter", auto: false, html: `
   <div class="inner cine">
     <div class="reel rise" style="--d:1">
       <div class="frame">
-        <video data-film data-src="${esc(DATA.film.src)}" poster="${esc(DATA.film.poster)}" playsinline webkit-playsinline preload="none"></video>
+        <video data-film data-src="${esc(DATA.film.src)}" data-src-hdr="${esc(DATA.film.srcHdr)}" poster="${esc(DATA.film.poster)}" playsinline webkit-playsinline preload="none"></video>
         <p class="subtitle">${esc(DATA.film.text)}</p>
         <button class="playover" type="button" data-act="film-play" aria-label="Play the video">
           <span class="disc"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z"/></svg></span>
@@ -950,6 +976,23 @@ S.push({ bg: "sky", fg: "ink", ac: "plum", dur: 15000, html: `
       <div class="meter" role="img" aria-label="${esc(DATA.memory.meterLabel)}: 100%"><i style="--w:100%"></i></div>
     </div>
     <p class="lede rise" style="--d:${DATA.memory.details.length + 5}">${esc(DATA.memory.care)}</p>
+  </div>` });
+
+/* upcoming duet */
+const NOTES = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4.5l11-2.5v13a3 3 0 1 1-2-2.83V6.6l-7 1.6V18a3 3 0 1 1-2-2.83z"/></svg>';
+S.push({ bg: "teal", fg: "blush", ac: "butter", dur: 11000, html: `
+  ${shape("ring", "--c:var(--pink);width:38cqw;height:38cqw;right:-16cqw;top:10cqh")}
+  ${shape("spark", "--c:var(--butter);width:10cqw;height:10cqw;left:8cqw;bottom:7cqh;--rot:40deg")}
+  <div class="inner">
+    <p class="label rise">${esc(DATA.duet.label)}</p>
+    <p class="lede rise" style="--d:1">${esc(DATA.duet.remember)}</p>
+    <p class="h2 rise" style="--d:2">${esc(DATA.duet.title)}</p>
+    <div class="tcard rise" style="--d:3" role="img" aria-label="${esc(DATA.duet.track)}, ${esc(DATA.duet.credits)}, out ${esc(DATA.duet.release)}">
+      <div class="cover">${NOTES}</div>
+      <div class="track-meta"><b>${esc(DATA.duet.track)}</b><small>${esc(DATA.duet.credits)}</small></div>
+      <div class="pbar"><span class="line"></span><span class="times"><span>0:00</span><span>${esc(DATA.duet.release)}</span></span></div>
+    </div>
+    <p class="small rise" style="--d:4">${esc(DATA.duet.cheese)}</p>
   </div>` });
 
 /* the part that matters */
@@ -1248,6 +1291,13 @@ function loadFilm(v) {
      if even that fails, unlock the slide so she's never stuck */
   v.addEventListener("error", async () => {
     const s = v.closest(".slide");
+    if (v.dataset.usingHdr) {
+      /* the original-colour copy didn't play here: use the regular one */
+      delete v.dataset.usingHdr;
+      v.src = v.dataset.src;
+      if (v.dataset.wantPlay && s.classList.contains("active")) playFilm(v);
+      return;
+    }
     if (v.dataset.blob) { unlockFilm(s); return; }
     v.dataset.blob = "1";
     try {
@@ -1257,7 +1307,10 @@ function loadFilm(v) {
       if (v.dataset.wantPlay && s.classList.contains("active")) playFilm(v);
     } catch { unlockFilm(s); }
   });
-  v.src = v.dataset.src;
+  /* phones that can play the original HDR file get it as filmed; everyone else gets the regular copy */
+  const hdrOK = !!v.dataset.srcHdr && v.canPlayType('video/mp4; codecs="hvc1.2.4.L123.B0"') !== "";
+  if (hdrOK) { v.dataset.usingHdr = "1"; v.src = v.dataset.srcHdr; }
+  else v.src = v.dataset.src;
 }
 
 /* she has to press play and watch a few seconds before she can move on */
